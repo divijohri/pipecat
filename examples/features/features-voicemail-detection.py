@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from loguru import logger
 
 from pipecat.audio.vad.silero import SileroVADAnalyzer
+from pipecat.classifiers.jev.classifier import JevClassifier
 from pipecat.evals.transport import EvalTransportParams
 from pipecat.extensions.voicemail.voicemail_detector import VoicemailDetector
 from pipecat.frames.frames import TTSSpeakFrame
@@ -72,9 +73,7 @@ async def run_bot(transport: BaseTransport, runner_args: RunnerArguments):
             system_instruction="You are a helpful assistant in a voice conversation. Your responses will be spoken aloud, so avoid emojis, bullet points, or other formatting that can't be spoken. Respond to what the user said in a creative, helpful, and brief way.",
         ),
     )
-    classifier_llm = OpenAILLMService(api_key=os.environ["OPENAI_API_KEY"])
-
-    voicemail = VoicemailDetector(llm=classifier_llm)
+    voicemail = VoicemailDetector(classifier=JevClassifier(api_key=os.environ["TYPESAFE_API_KEY"]))
 
     context = LLMContext()
     user_aggregator, assistant_aggregator = LLMContextAggregatorPair(
